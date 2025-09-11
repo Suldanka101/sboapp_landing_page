@@ -88,7 +88,9 @@ export default function BooksManagementPage() {
       const matchesSearch =
         book.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         book.author?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        book.category?.toLowerCase().includes(searchQuery.toLowerCase())
+        book.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        book.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        book.status?.toLowerCase().includes(searchQuery.toLowerCase())
 
       const matchesStatus = filterStatus === "all" || book.status === filterStatus
       const matchesCategory = filterCategory === "all" || book.category === filterCategory
@@ -358,7 +360,7 @@ export default function BooksManagementPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search books by title, author, or category..."
+                placeholder="Search books by title, author, category, description, or status..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"

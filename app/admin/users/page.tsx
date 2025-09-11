@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRealtimeUsers } from "@/hooks/use-realtime-data"
-import { addUser, updateUser, deleteUser } from "@/lib/firebase-realtime"
+import { updateUser, deleteUser } from "@/lib/firebase-realtime"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,19 +18,7 @@ import {
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-  Users,
-  Search,
-  Plus,
-  Eye,
-  Edit,
-  Trash2,
-  Download,
-  Loader2,
-  ChevronLeft,
-  ChevronRight,
-  UserPlus,
-} from "lucide-react"
+import { Users, Search, Eye, Edit, Trash2, Download, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 
 interface User {
   id: string
@@ -52,18 +40,10 @@ export default function UsersManagementPage() {
   const [filterStatus, setFilterStatus] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
-  const [showAddUser, setShowAddUser] = useState(false)
   const [showViewUser, setShowViewUser] = useState(false)
   const [showEditUser, setShowEditUser] = useState(false)
-  const [isAdding, setIsAdding] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [newUser, setNewUser] = useState({
-    email: "",
-    name: "",
-    role: "User",
-    status: "Active",
-  })
   const [editUser, setEditUser] = useState({
     name: "",
     email: "",
@@ -89,41 +69,6 @@ export default function UsersManagementPage() {
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage)
-
-  const handleAddUser = async () => {
-    if (!newUser.email || !newUser.name) {
-      alert("Please fill in all required fields")
-      return
-    }
-
-    setIsAdding(true)
-    try {
-      const userData = {
-        email: newUser.email,
-        name: newUser.name,
-        displayName: newUser.name,
-        role: newUser.role,
-        status: newUser.status,
-        subscription: "Free",
-        booksRead: 0,
-        joinDate: new Date().toISOString(),
-        lastActive: new Date().toISOString(),
-      }
-
-      console.log("[v0] Adding user:", userData)
-      await addUser(userData)
-      console.log("[v0] User added successfully")
-
-      setShowAddUser(false)
-      setNewUser({ email: "", name: "", role: "User", status: "Active" })
-      alert("User added successfully!")
-    } catch (error) {
-      console.error("[v0] Error adding user:", error)
-      alert("Failed to add user. Please try again.")
-    } finally {
-      setIsAdding(false)
-    }
-  }
 
   const handleEditUser = async () => {
     if (!selectedUser || !editUser.email || !editUser.name) {
@@ -212,92 +157,6 @@ export default function UsersManagementPage() {
           </h1>
           <p className="text-muted-foreground">Manage user accounts and permissions</p>
         </div>
-        <Dialog open={showAddUser} onOpenChange={setShowAddUser}>
-          <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Plus className="h-4 w-4 mr-2" />
-              Add User
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New User</DialogTitle>
-              <DialogDescription>Create a new user account for the platform</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                  placeholder="user@example.com"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name *</Label>
-                <Input
-                  id="name"
-                  value={newUser.name}
-                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                  placeholder="John Doe"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select value={newUser.role} onValueChange={(value) => setNewUser({ ...newUser, role: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="User">User</SelectItem>
-                    <SelectItem value="Author">Author</SelectItem>
-                    <SelectItem value="Agent">Agent</SelectItem>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select value={newUser.status} onValueChange={(value) => setNewUser({ ...newUser, status: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                    <SelectItem value="Suspended">Suspended</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleAddUser}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                  disabled={isAdding}
-                >
-                  {isAdding ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Adding...
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Add User
-                    </>
-                  )}
-                </Button>
-                <Button variant="outline" onClick={() => setShowAddUser(false)} disabled={isAdding}>
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -365,7 +224,7 @@ export default function UsersManagementPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search users by name or email..."
+                placeholder="Search users by name, email, or role..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"

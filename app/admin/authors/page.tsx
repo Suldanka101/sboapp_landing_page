@@ -102,7 +102,9 @@ export default function AuthorsManagementPage() {
       author.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       author.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       author.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      author.genre?.toLowerCase().includes(searchQuery.toLowerCase())
+      author.genre?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      author.authorLevel?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      author.bio?.toLowerCase().includes(searchQuery.toLowerCase())
 
     const matchesStatus = filterStatus === "all" || author.status === filterStatus
     const matchesLevel = filterLevel === "all" || author.authorLevel === filterLevel
@@ -335,7 +337,7 @@ export default function AuthorsManagementPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search authors by name, email, or genre..."
+                placeholder="Search authors by name, email, genre, level, or bio..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
